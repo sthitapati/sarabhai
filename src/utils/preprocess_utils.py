@@ -308,7 +308,7 @@ def remove_dropped_in_events(port_in_times: List, port_out_times: List, port_ref
         del port_out_times[index]
         del port_references[index]
 
-    return port_out_times, port_in_times, port_references
+    return port_in_times, port_out_times, port_references
 
 def sort_by_time(port_in_times: List, port_out_times: List, port_references: List) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
