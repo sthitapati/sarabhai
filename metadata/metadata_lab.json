@@ -1,8 +1,8 @@
 {
     "Experiment": "test_data",
-    "Animal_ID": ["EJT225", "EJT226"],
+    "Animals": ["EJT225", "EJT226"],
     "Group": ["Control", "Control"],
     "Path_To_Raw_Data": "/home/sthitapati/data/bpod_raw_data/",
-    "CameraPath": "/home/sthitapati/data/bpod_raw_data/EJT_FlyCap_SeqTracking/",
-    "Output_Data_Folder": "/home/sthitapati/data/Behavioural_data_output/"
+    "Camera_Folder": "/home/sthitapati/data/bpod_raw_data/EJT_FlyCap_SeqTracking/",
+    "Output_Folder": "/home/sthitapati/data/Behavioural_data_output/"
 }
