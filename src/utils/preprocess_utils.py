@@ -634,15 +634,16 @@ def handle_opto_stim_data(behavior_data, trial_settings, session_index, trial_id
                 if executed_optotrials[i] == 0:  # If no optostim, insert NaN
                     optotrials_port.append(float('nan'))
                 else:
-                    optotrials_port.append(np.where(port_stimulated_data[i] == 1)[0][0] + 1)  # Adding 1 to match port numbers 1 through 4
-
+                    stimulated_port_indices = np.where(port_stimulated_data[:, i] == 1)[0]
+                    # Check if the stimulated_port_indices is not empty
+                    if stimulated_port_indices.size:
+                        optotrials_port.append(stimulated_port_indices[0] + 1)  # Adding 1 to match port numbers 1 through 4
+                    else:
+                        # Handle the case where there is no stimulated port.
+                        # This appends NaN to the list, but you can replace it with another appropriate value if necessary.
+                        optotrials_port.append(float('nan'))
         else:
-            optotrials_port = []
-            for i, trial_id in enumerate(trial_ids):
-                if executed_optotrials[i] == 0:  # If no optostim, insert NaN
-                    optotrials_port.append(float('nan'))
-                else:
-                    optotrials_port.append(trial_settings['GUI']['StimPoke'])
+            optotrials_port = [trial_settings['GUI']['StimPoke'] if executed_optotrials[i] != 0 else float('nan') for i in range(len(trial_ids))]
 
         # align ports to dataframe
         optotrials_port_aligned = align_data_to_trial_ids(trial_ids, optotrials_port)
@@ -652,6 +653,7 @@ def handle_opto_stim_data(behavior_data, trial_settings, session_index, trial_id
         optotrials_port_aligned = ['NaN'] * len(trial_ids)
      
     return optotrials_aligned, optotrials_port_aligned
+
 
 ### --------------------------------------------------------------------- ###
 ### These functions are used to handle the data for the camera timestamps ###
