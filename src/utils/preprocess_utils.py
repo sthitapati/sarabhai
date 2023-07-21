@@ -593,66 +593,60 @@ def align_data_to_trial_ids(trial_ids: List[int], data: List[int]) -> List[int]:
 
 def handle_opto_stim_data(behavior_data, trial_settings, session_index, trial_ids):
     """
-    Handles the optostim data. If optostim was enabled, creates a dataframe of optostim settings and
-    aligns optostim trial data to the trial data. If optostim was not enabled, creates a list of 'NaN' values.
-    If StimPoke was set to 5, includes additional variables in the settings dataframe.
+    Aligns optostim data with trial data.
 
-    Parameters:
-    behavior_data (dict): The behavior data dictionary.
-    trial_settings (dict): The trial settings dictionary.
-    session_index (int): The current session index.
-    trial_ids (list): List of trial ids.
+    Args:
+        behavior_data (dict): The behavior data dictionary.
+        trial_settings (dict): The trial settings dictionary.
+        session_index (int): The current session index.
+        trial_ids (list): List of trial ids.
 
     Returns:
-    optotrials_aligned (list): The list of aligned optostim trial data.
-    optotrials_port_aligned (list): The list of aligned optostim port data.
+        List, List: Lists of aligned optostim trial data and port data respectively.
     """
+    
+    # Initialize aligned data lists
+    optotrials_aligned = []
+    optotrials_port_aligned = []
+
+    # Check if OptoStim was enabled
     if trial_settings['GUI']['OptoStim'] == 1:
-        # Create opto settings as a dataframe
-        opto_settings = pd.DataFrame({
-            'StimPoke': [trial_settings['GUI']['StimPoke']],
-            'PulsePower': [trial_settings['GUI']['PulsePower']],
-            'OptoChance': [trial_settings['GUI']['OptoChance']],
-            'PulseDuration': [trial_settings['GUI']['PulseDuration']],
-            'PulseInterval': [trial_settings['GUI']['PulseInterval']],
-            'TrainDuration': [trial_settings['GUI']['TrainDuration']],
-            'TrainDelay': [trial_settings['GUI']['TrainDelay']] if 'TrainDelay' in trial_settings['GUI'] else [None]
-        })
 
-        # Pull out optotrials from data if available
+        # Get the optotrials and port_stimulated_data
         optotrials = behavior_data[session_index]['SessionData']['SessionVariables']['OptoStim']
+        port_stimulated_data = behavior_data[session_index]['SessionData']['SessionVariables']['PortStimulated']
+        
+        # Initialize trial index
+        trial_idx = 0
 
-        # Align these to dataframe
-        executed_optotrials = optotrials[0:trial_ids[-1]]
-        optotrials_aligned = align_data_to_trial_ids(trial_ids, executed_optotrials)
+        # Iterate over trial_ids
+        for i in range(len(trial_ids)):
+            # Update trial index when a new trial starts
+            if i != 0 and trial_ids[i] != trial_ids[i - 1]:
+                trial_idx += 1
 
-        # Determine stimulated port
-        if trial_settings['GUI']['StimPoke'] == 5:
-            port_stimulated_data = behavior_data[session_index]['SessionData']['SessionVariables']['PortStimulated']
-            optotrials_port = []
-            for i in range(len(trial_ids)):
-                if executed_optotrials[i] == 0:  # If no optostim, insert NaN
-                    optotrials_port.append(float('nan'))
+            # Check if current trial is an optotrial and trial index is within the optotrials length
+            if trial_idx < len(optotrials) and optotrials[trial_idx] == 1:
+                optotrials_aligned.append(1)
+
+                # Get the index of stimulated port for the current optotrial
+                stimulated_port_indices = np.where(port_stimulated_data[:, trial_idx] == 1)[0]
+                # If stimulated port index exists, append it to the aligned port data list
+                if stimulated_port_indices.size:
+                    optotrials_port_aligned.append(stimulated_port_indices[0] + 1)
                 else:
-                    stimulated_port_indices = np.where(port_stimulated_data[:, i] == 1)[0]
-                    # Check if the stimulated_port_indices is not empty
-                    if stimulated_port_indices.size:
-                        optotrials_port.append(stimulated_port_indices[0] + 1)  # Adding 1 to match port numbers 1 through 4
-                    else:
-                        # Handle the case where there is no stimulated port.
-                        # This appends NaN to the list, but you can replace it with another appropriate value if necessary.
-                        optotrials_port.append(float('nan'))
-        else:
-            optotrials_port = [trial_settings['GUI']['StimPoke'] if executed_optotrials[i] != 0 else float('nan') for i in range(len(trial_ids))]
-
-        # align ports to dataframe
-        optotrials_port_aligned = align_data_to_trial_ids(trial_ids, optotrials_port)
+                    optotrials_port_aligned.append(float('nan'))
+            else:
+                # If not an optotrial, append NaN values
+                optotrials_aligned.append(float('nan'))
+                optotrials_port_aligned.append(float('nan'))
     else:
-        # No optostim so fill this column with NaNs
-        optotrials_aligned = ['NaN'] * len(trial_ids)
-        optotrials_port_aligned = ['NaN'] * len(trial_ids)
-     
+        # If OptoStim is not enabled, create NaN lists of the length of trial_ids
+        optotrials_aligned = [float('nan')] * len(trial_ids)
+        optotrials_port_aligned = [float('nan')] * len(trial_ids)
+
     return optotrials_aligned, optotrials_port_aligned
+
 
 
 ### --------------------------------------------------------------------- ###
@@ -1419,6 +1413,9 @@ def process_animal_data(
                         'reward_amounts_ports_1_2_3_4': aligned_intermediate_rewards[:-1]
                     }
                 )
+
+                # Replace all NaN values with string 'NaN', this is to account for some NaNs show up as blank cells in excel
+                transition_df = transition_df.fillna('NaN')
 
                 # Save Data
                 transition_df.to_csv(os.path.join(save_path, 'PreProcessed_TransitionData.csv'))
