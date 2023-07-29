@@ -12,6 +12,7 @@ import pickle
 import json
 import argparse
 import datetime
+import shutil
 
 def parse_arguments():
     """
@@ -588,6 +589,23 @@ def align_data_to_trial_ids(trial_ids: List[int], data: List[int]) -> List[int]:
 
     return aligned_data
 
+def generate_map(GUI, GUIMeta):
+    mapping = {}
+    for key in GUI:
+        if key in GUIMeta:
+            if GUIMeta[key]['Style'] == 'popupmenu':
+                index = GUI[key] - 1  # subtract 1 to adjust for 0-based indexing
+                mapping[key] = GUIMeta[key]['String'][index]
+            elif GUIMeta[key]['Style'] == 'checkbox':
+                mapping[key] = bool(GUI[key])
+        else:
+            # if the value is an ndarray, convert to list
+            if isinstance(GUI[key], np.ndarray):
+                mapping[key] = GUI[key].tolist()
+            else:
+                mapping[key] = GUI[key]
+    return mapping
+
 ### ---------------------------------------- ###
 ### handle data for optogenetics experiments ###
 ### ---------------------------------------- ###
@@ -875,17 +893,26 @@ def process_animal_data(
             else:
                 save_path = os.path.join(output_directory, current_animal_id, 'Preprocessed', f'{session_index}_{session_date}')
 
-            # Check if the directory exists already
-            if not os.path.isdir(save_path):
-                # If it doesn't exist, make the directory and set the processing flag to True
-                os.makedirs(save_path)
-                should_process = True
+            if os.path.isdir(save_path):
+                print(f"Directory {save_path} exists.")
+                if replace_existing:
+                    print(f"Replace flag is set. Removing and recreating directory {save_path}.")
+                    shutil.rmtree(save_path)
+                    os.makedirs(save_path)  # recreate the directory
+                    should_process = True  # Set should_process to True after removing directory
+                else:
+                    # If replace_existing is False, print a message and continue to the next session
+                    print(f"Replace flag is not set. Skipping directory {save_path}.")
+                    should_process = False  # Set should_process to False as we're not replacing existing data
             else:
-                # If it does exist, check the replace_existing flag to determine if data should be processed
-                should_process = replace_existing
+                # If directory does not exist, create it and set should_process to True
+                print(f"Directory {save_path} does not exist. Creating it.")
+                os.makedirs(save_path)
+                should_process = True  # Set should_process to True as directory is new and we need to process data
 
+                
             # If processing flag is True, convert the data to a Python-friendly format
-            if should_process:
+            if should_process:                
                 # Calculate final reward amount for the session
                 final_reward_amounts = []
                 for item in behavior_data[session_index]['SessionData']['SessionVariables']['TLevel']:
@@ -899,7 +926,12 @@ def process_animal_data(
 
                 # fetch trial_settings 
                 trial_settings = behavior_data[session_index]['SessionData']['TrialSettings'][0]
+                # save trial settings
+                current_trial_settings = generate_map(trial_settings['GUI'], trial_settings['GUIMeta'])
+                os.path.join(save_path, 'settings.json')
 
+                with open(os.path.join(save_path, 'settings.json'), 'w') as outfile:
+                    json.dump(current_trial_settings, outfile)         
 
                 # Save out LED intensities and reward amounts on their own:
                 led_intensities = pd.DataFrame({
@@ -1176,11 +1208,10 @@ def process_animal_data(
                 # Save Data
                 session_information.to_csv(save_path + '/PreProcessed_SessionInfo.csv')
                 processed_sessions = ", ".join(str(session) for session in processed_sessions)
-                        
+                            
             else:
-                skipped_sessions = ", ".join(str(session) for session in skipped_sessions)
+                skipped_sessions += f"{session_index}, "  # Append session_index to the list of skipped sessions
 
-
-        print(f'Already Processed so skipped: {skipped_sessions}')
-        print(f'Processed: {processed_sessions}')
-    print('finished')
+    print(f'Already Processed so skipped: {skipped_sessions.rstrip(", ")}')  # Remove trailing comma and space
+    print(f'Processed: {processed_sessions.rstrip(", ")}')  # Remove trailing comma and space
+print('finished')
