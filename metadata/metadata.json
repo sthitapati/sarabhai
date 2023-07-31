@@ -1,8 +1,8 @@
 {
     "Experiment": "test_data",
-    "Animals": ["EJT244","SP110", "SP111"],
-    "Group": ["Control", "Control", "Control"],
-    "Path_To_Raw_Data": "/home/sthitapati/Documents/sequence_data/bpod_raw_data/",
-    "Camera_Folder": "/home/sthitapati/data/bpod_raw_data/EJT_FlyCap_SeqTracking/",
-    "Output_Folder": "/home/sthitapati/Documents/sequence_data/output/"
+    "Animals": ["SP111", "SP112"],
+    "Group": ["Control", "Control"],
+    "Path_To_Raw_Data": "/home/sthitapati/Documents/sequence_data/bpod_raw_data",
+    "Camera_Folder": "/home/sthitapati/Documents/sequence_data/SP_FlyCap",
+    "Output_Folder": "/home/sthitapati/Documents/sequence_data/output"
 }
