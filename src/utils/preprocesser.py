@@ -1214,4 +1214,4 @@ def process_animal_data(
 
     print(f'Already Processed so skipped: {skipped_sessions.rstrip(", ")}')  # Remove trailing comma and space
     print(f'Processed: {processed_sessions.rstrip(", ")}')  # Remove trailing comma and space
-print('preprocessing finished')
+    print('preprocessing finished')
