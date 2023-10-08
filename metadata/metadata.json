@@ -1,8 +1,9 @@
 {
-    "Experiment": "test_data",
-    "Animals": ["SP111", "SP112"],
-    "Group": ["Control", "Control"],
+    "Experiment": "seq_optoinihibition",
+    "Animals": ["SP108", "SP110", "SP111", "SP112", "SP128"],
+    "Group": ["DLS-GtACR", "DLS-GtACR", "DLS-genotype_negative", "DLS-GtACR", "rILT-GtACR"],
     "Path_To_Raw_Data": "/home/sthitapati/Documents/sequence_data/bpod_raw_data",
     "Camera_Folder": "/home/sthitapati/Documents/sequence_data/SP_FlyCap",
-    "Output_Folder": "/home/sthitapati/Documents/sequence_data/output"
+    "Output_Folder": "/home/sthitapati/Documents/sequence_data/seq_optoinhibition/output"
 }
+

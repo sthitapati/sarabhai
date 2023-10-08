@@ -28,7 +28,7 @@ import json
 #####################################################################################################################################
 
 
-def get_session_settings(output_folder, current_animal_id):
+def get_session_details(output_folder, current_animal_id):
     """
     This function takes a list of filenames and extracts the session id, 
     date, file number, and day from each filename. It returns a dataframe 
