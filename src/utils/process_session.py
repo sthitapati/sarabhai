@@ -226,8 +226,8 @@ def process_sessions(animal_ids, groups, output_directory):
         # Print a message to indicate progress
         print(f"processing all sessions of animal {animal_id} from group {group}.")
 
-        # Get session settings
-        session_info_df = get_session_settings(output_directory, animal_id)
+        # Get session details
+        session_info_df = get_session_details(output_directory, animal_id)
 
         # Process transition data for the current animal
         all_transition_data_df = process_transition_data(session_info_df, 
