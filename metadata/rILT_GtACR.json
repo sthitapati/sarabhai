@@ -1,8 +1,8 @@
-# metadata
-Experiment = "test_data"
-Animals = ["SP128"]
-Group = ["rILT-GtACR"]
-Path_To_Raw_Data = "/home/sthitapati/Documents/sequence_data/bpod_raw_data"
-Camera_Folder = "/home/sthitapati/Documents/sequence_data/SP_FlyCap"
-# Output_Folder = "/home/sthitapati/Documents/sequence_data/seq_optoinhibition/output"
-Output_Folder = "/mnt/Data/analysis/seq_optoinhibition/output"
+{   
+    "Experiment": "rILT_GtACR",
+    "Animals": ["SP127", "SP128", "SP129", "SP130"],
+    "Group": ["rILT-GtACR","rILT-GtACR","rILT-GtACR","rILT-GtACR"],
+    "Path_To_Raw_Data": "/mnt/ceph/data/bpod_raw_data",
+    "Camera_Folder": "/mnt/ceph/projects/sequences/SP_FlyCap",
+    "Output_Folder": "/mnt/Data/analysis/seq_optoinhibition/output"
+}
