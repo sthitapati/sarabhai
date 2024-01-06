@@ -1,0 +1,8 @@
+{   
+    "Experiment": "DLS_GtACR",
+    "Animals": ["SP153"],
+    "Group": ["DLS-GtACR"],
+    "Path_To_Raw_Data": "/home/sthitapati/Documents/sequence_data/bpod_raw_data",
+    "Camera_Folder": "/home/sthitapati/Documents/sequence_data/SP_FlyCap",
+    "Output_Folder": "/home/sthitapati/Documents/sequence_data/seq_optoinhibition/output"
+}
