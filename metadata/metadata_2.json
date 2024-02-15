@@ -1,8 +1,0 @@
-{
-    "Experiment": "test_data",
-    "Animal_ID": ["SP111", "SP112"],
-    "Group": ["Control", "Control"],
-    "Path_To_Raw_Data": "/home/sthitapati/Documents/sequence_data/bpod_raw_data/",
-    "CameraPath": "/home/sthitapati/Documents/sequence_data/FlyCap_SeqTracking/",
-    "Output_Data_Folder": "/home/sthitapati/Documents/sequence_data/output/"
-}
